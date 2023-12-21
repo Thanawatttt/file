@@ -1,0 +1,61 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>ฝากไฟล์</title>
+    <style>
+        #progress {
+            display: none;
+        }
+    </style>
+</head>
+<body>
+
+    <h1>ฝากไฟล์</h1>
+
+    <form id="uploadForm">
+        <label for="file">เลือกไฟล์:</label>
+        <input type="file" name="file" id="file" required>
+        <br>
+        <input type="submit" value="ฝากไฟล์">
+    </form>
+
+    <div id="progress">
+        <progress id="progressBar" value="0" max="100"></progress>
+        <span id="status">รอ...</span>
+    </div>
+
+    <script>
+        document.getElementById('uploadForm').addEventListener('submit', function (e) {
+            e.preventDefault();
+
+            var formData = new FormData(this);
+
+            var xhr = new XMLHttpRequest();
+
+            xhr.open('POST', '/upload', true);
+
+            xhr.upload.onprogress = function (e) {
+                if (e.lengthComputable) {
+                    var percentComplete = (e.loaded / e.total) * 100;
+                    document.getElementById('progress').style.display = 'block';
+                    document.getElementById('progressBar').value = percentComplete;
+                    document.getElementById('status').innerHTML = percentComplete + '% กำลังอัปโหลด...';
+                }
+            };
+
+            xhr.onload = function () {
+                if (xhr.status === 200) {
+                    document.getElementById('status').innerHTML = 'อัปโหลดเสร็จสมบูรณ์!';
+                } else {
+                    document.getElementById('status').innerHTML = 'เกิดข้อผิดพลาดขณะอัปโหลด';
+                }
+            };
+
+            xhr.send(formData);
+        });
+    </script>
+
+</body>
+</html>
